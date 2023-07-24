@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS AUTHOR_TBL (
     author_id INT NOT NULL AUTO_INCREMENT,
     name varchar(64) NOT NULL,
     country varchar(32) NOT NULL,
+    update_date TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    created_date timestamp NOT NULL default CURRENT_TIMESTAMP,
     PRIMARY KEY (author_id)
 );
 
