@@ -50,7 +50,7 @@ class BooksService(private val repo: BooksRepository) {
             if (insert == SUCCESS) return InsUpdDto("登録に成功しました。", true)
             return InsUpdDto("登録に失敗しました。", false)
         }
-        return InsUpdDto("著者がDBに存在しないため本籍が登録できませんでした、先に著者を登録してください。", false)
+        return InsUpdDto("著者がDBに存在しないため書籍が登録できませんでした、先に著者を登録してください。", false)
     }
 
     fun updateAuthor(author: AuthorUpdate): InsUpdDto {
@@ -66,6 +66,6 @@ class BooksService(private val repo: BooksRepository) {
             if (update == SUCCESS) return InsUpdDto("更新に成功しました。", true)
             return InsUpdDto("更新に失敗しました。", false)
         }
-        return InsUpdDto("DBに存在しない著者で本籍の情報を更新することができません、先に著者を登録してください。", false)
+        return InsUpdDto("DBに存在しない著者で書籍の情報を更新することができません、先に著者を登録してください。", false)
     }
 }

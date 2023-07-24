@@ -45,7 +45,7 @@ jooq {
 				logging = Logging.WARN
 				jdbc.apply {
 					driver = "com.mysql.cj.jdbc.Driver"
-					url = "jdbc:mysql://localhost:13306/bookshelf?autoReconnect=true&useSSL=false&characterEncoding=UTF-8"
+					url = "jdbc:mysql://localhost:13306/bookshelf?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false&characterEncoding=UTF-8"
 					user = "user"
 					password = "docker"
 					properties = listOf(

@@ -110,7 +110,7 @@ internal class BooksControllerTest {
     }
 
     @Nested
-    @DisplayName("検索：本籍検索")
+    @DisplayName("検索：書籍検索")
     inner class SearchBook {
         @DisplayName("searchBook(): /v1/book/{bookId} にリクエストのResponseが200")
         @Test
@@ -391,7 +391,7 @@ internal class BooksControllerTest {
     }
 
     @Nested
-    @DisplayName("登録：本籍登録")
+    @DisplayName("登録：書籍登録")
     inner class InsertBook {
         @DisplayName("InsertBook(): /v1/create/book にリクエストのResponseが200、" +
                 "Json Responseの成功メッセージ確認")
@@ -475,7 +475,7 @@ internal class BooksControllerTest {
                 // then
                 .andExpect {
                     status { isOk() }
-                    jsonPath("$.message") { value("著者がDBに存在しないため本籍が登録できませんでした、先に著者を登録してください。") }
+                    jsonPath("$.message") { value("著者がDBに存在しないため書籍が登録できませんでした、先に著者を登録してください。") }
                     jsonPath("$.success") { value(false) }
                 }
         }
@@ -653,7 +653,7 @@ internal class BooksControllerTest {
         @Test
         fun updateAuthor_fail_authorId_negative() {
             //given
-            val requestModel = AuthorUpdate(authorId = -1, name = "", country = "日本")
+            val requestModel = AuthorUpdate(authorId = -1, name = "aaaa", country = "日本")
 
             // when
             mockMvc.post("/v1/update/author") {
@@ -761,7 +761,7 @@ internal class BooksControllerTest {
     }
 
     @Nested
-    @DisplayName("更新：本籍登録")
+    @DisplayName("更新：書籍登録")
     inner class UpdateBook {
 
         @DisplayName(
@@ -851,7 +851,7 @@ internal class BooksControllerTest {
                 // then
                 .andExpect {
                     status { isOk() }
-                    jsonPath("$.message") { value("DBに存在しない著者で本籍の情報を更新することができません、先に著者を登録してください。") }
+                    jsonPath("$.message") { value("DBに存在しない著者で書籍の情報を更新することができません、先に著者を登録してください。") }
                     jsonPath("$.success") { value(false) }
                 }
         }

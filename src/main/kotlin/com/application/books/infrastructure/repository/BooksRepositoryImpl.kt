@@ -71,6 +71,7 @@ class BooksRepositoryImpl(private val dslContext: DSLContext): BooksRepository {
     override fun updateAuthor(author: AuthorUpdate): Int {
         return dslContext.update(AUTHOR_TBL)
             .set(AUTHOR_TBL.NAME, author.name)
+            .set(AUTHOR_TBL.COUNTRY, author.country)
             .where(AUTHOR_TBL.AUTHOR_ID.eq(author.authorId))
             .execute()
     }
