@@ -58,6 +58,17 @@ class BooksRepositoryImpl(private val dslContext: DSLContext): BooksRepository {
             }
     }
 
+    override fun getBookBeforeUpdate(bookId: Int): Map<String, Any>? {
+        return this.dslContext.select()
+            .from(BOOKS_TBL)
+            .where(BOOKS_TBL.BOOK_ID.eq(bookId))
+            .fetchOne()?.map { record ->
+                return@map mapOf(
+                    "authorId" to record.getValue(BOOKS_TBL.AUTHOR_ID),
+                    "title" to record.getValue(BOOKS_TBL.TITLE))
+            }
+    }
+
     override fun insertAuthor(author: AuthorInsert): Int {
         return dslContext.insertInto(AUTHOR_TBL, AUTHOR_TBL.NAME, AUTHOR_TBL.COUNTRY)
             .values(author.name, author.country).execute()

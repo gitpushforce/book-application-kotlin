@@ -583,6 +583,10 @@ internal class BooksControllerTest {
         fun updateAuthor_success() {
             //given
             val requestModel = AuthorUpdate(authorId = 1, name = "著者太郎", country = "日本")
+
+            // 現在の著者情報作成(Mock)
+            val author = mapOf("name" to "aaa", "country" to "nnn")
+            given(repoMock.findAuthorById(1)).willReturn(author)
             // repositoryから1(成功)返却される
             given(repoMock.updateAuthor(requestModel)).willReturn(1)
             // Serviceのリアルメソッドを呼び出す
@@ -609,6 +613,8 @@ internal class BooksControllerTest {
         fun updateAuthor_failUpdate() {
             //given
             val requestModel = AuthorUpdate(authorId = 1, name = "著者太郎", country = "日本")
+            // 現在の著者情報作成(Mock)
+            given(repoMock.findAuthorById(1)).willReturn(null)
             // repositoryから0(失敗)返却される
             given(repoMock.updateAuthor(requestModel)).willReturn(0)
             // Serviceのリアルメソッドを呼び出す
@@ -669,31 +675,10 @@ internal class BooksControllerTest {
                 }
         }
 
-        @DisplayName("updateAuthor(): nameパラメータが空の時," +
-                "/v1/update/author にリクエストのResponseが4xx")
-        @Test
-        fun updateAuthor_fail_name_empty() {
-            //given
-            val requestModel = AuthorUpdate(authorId = 1, name = "", country = "日本")
-
-            // when
-            mockMvc.post("/v1/update/author") {
-                contentType = MediaType.APPLICATION_JSON
-                content = (json(mapper.writeValueAsString(requestModel)))
-                accept = MediaType.APPLICATION_JSON
-            }
-                // then
-                .andExpect {
-                    status { is4xxClientError() }
-                    jsonPath("$.message") { value("nameを設定してください。") }
-                    jsonPath("$.details") { value("uri=/v1/update/author") }
-                }
-        }
-
         @DisplayName("updateAuthor(): nameパラメータの文字が64字より長いの時," +
                 "/v1/update/author にリクエストのResponseが4xx")
         @Test
-        fun updateAuthor_fail_authorId_long() {
+        fun updateAuthor_fail_name_long() {
             //given
             val source = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             // ランダム65字
@@ -711,27 +696,6 @@ internal class BooksControllerTest {
                 .andExpect {
                     status { is4xxClientError() }
                     jsonPath("$.message") { value("nameは64文字以内に入力してください。") }
-                    jsonPath("$.details") { value("uri=/v1/update/author") }
-                }
-        }
-
-        @DisplayName("updateAuthor(): countryパラメータが空の時," +
-                "/v1/update/author にリクエストのResponseが4xx")
-        @Test
-        fun insertAuthor_fail_country_empty() {
-            //given
-            val requestModel = AuthorUpdate(authorId = 1, name = "abc", country = "")
-
-            // when
-            mockMvc.post("/v1/update/author") {
-                contentType = MediaType.APPLICATION_JSON
-                content = (json(mapper.writeValueAsString(requestModel)))
-                accept = MediaType.APPLICATION_JSON
-            }
-                // then
-                .andExpect {
-                    status { is4xxClientError() }
-                    jsonPath("$.message") { value("countryを設定してください。") }
                     jsonPath("$.details") { value("uri=/v1/update/author") }
                 }
         }
@@ -902,30 +866,6 @@ internal class BooksControllerTest {
         }
 
         @DisplayName(
-            "updateBook(): titleパラメータが空の時," +
-                    "/v1/book/author にリクエストのResponseが4xx"
-        )
-        @Test
-        fun updateBook_fail_title_empty() {
-            //given
-            val requestModel = BookUpdate(bookId = 1, title = "", authorId = 1)
-
-            // when
-            mockMvc.post("/v1/update/book") {
-                contentType = MediaType.APPLICATION_JSON
-                content = (json(mapper.writeValueAsString(requestModel)))
-
-                accept = MediaType.APPLICATION_JSON
-            }
-                // then
-                .andExpect {
-                    status { is4xxClientError() }
-                    jsonPath("$.message") { value("titleを設定してください。") }
-                    jsonPath("$.details") { value("uri=/v1/update/book") }
-                }
-        }
-
-        @DisplayName(
             "updateBook(): titleパラメータの文字が128字より長いの時," +
                     "/v1/create/book にリクエストのResponseが4xx"
         )
@@ -955,16 +895,16 @@ internal class BooksControllerTest {
         }
 
         @DisplayName(
-            "insertBook(): authorIdパラメータが空の時," +
+            "updateBook(): authorIdパラメータが空の時," +
                     "/v1/create/book にリクエストのResponseが4xx"
         )
         @Test
-        fun insertBook_fail_authorId_empty() {
+        fun updateBook_fail_authorId_empty() {
             //given
-            val requestModel = "{\"title\":  \"abc\",\"authorId\":}"
+            val requestModel = "{\"bookId\": 1, \"title\":  \"abc\",\"authorId\":}"
 
             // when
-            mockMvc.put("/v1/create/book") {
+            mockMvc.post("/v1/update/book") {
                 contentType = MediaType.APPLICATION_JSON
                 content = (json(requestModel))
 
@@ -974,7 +914,31 @@ internal class BooksControllerTest {
                 .andExpect {
                     status { is4xxClientError() }
                     jsonPath("\$.message") { value("Objectパラメターの必要なフィルドが設定されなかったため、Jsonリクエストがパースできませんでした。") }
-                    jsonPath("\$.details") { value("uri=/v1/create/book") }
+                    jsonPath("\$.details") { value("uri=/v1/update/book") }
+                }
+        }
+
+        @DisplayName(
+            "updateBook(): authorIdパラメータが数字に変換にできない値," +
+                    "/v1/update/book にリクエストのResponseが4xx"
+        )
+        @Test
+        fun updateBook_fail_authorId_alphabet() {
+            //given
+            val requestModel = "{\"bookId\": 1, \"title\":  \"abc\",\"authorId\":\"n\"}"
+
+            // when
+            mockMvc.post("/v1/update/book") {
+                contentType = MediaType.APPLICATION_JSON
+                content = (json(requestModel))
+
+                accept = MediaType.APPLICATION_JSON
+            }
+                // then
+                .andExpect {
+                    status { is4xxClientError() }
+                    jsonPath("\$.message") { value("Objectパラメターのフィルドのデータ型に誤りがあります。") }
+                    jsonPath("\$.details") { value("uri=/v1/update/book") }
                 }
         }
 

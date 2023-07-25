@@ -13,6 +13,7 @@ interface BooksRepository {
     fun findAuthorNameById(authorId: Int): String?
     fun findAuthorById(authorId: Int): Map<String, String>?
     fun findBooksByAuthorId(authorId: Int): List<WorkInfo>
+    fun getBookBeforeUpdate(bookId: Int): Map<String, Any>?
 
     fun insertAuthor(author: AuthorInsert): Int
     fun insertBook(book: BookInsert): Int
